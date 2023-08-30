@@ -1,10 +1,9 @@
 package recruitment.Task.api;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Repository;
 import org.springframework.stereotype.Service;
-import org.springframework.web.context.annotation.ApplicationScope;
 import org.springframework.web.reactive.function.client.WebClient;
+import recruitment.Task.exception.NotFoundLoginException;
 import recruitment.Task.model.Branch;
 import recruitment.Task.model.SingleRepository;
 
@@ -24,21 +23,24 @@ public class GitHubAPIService {
     }
 
     public List<SingleRepository> getRepositoriesBasedOnUsername(String aUsername) {
-        return localApiClient
-                .get()
-                .uri("/users/" + aUsername + "/repos")
-                .retrieve()
-                .bodyToFlux(SingleRepository.class).collect(Collectors.toList())
-                .block(REQUEST_TIMEOUT);
+        try {
+            return localApiClient
+                    .get()
+                    .uri("/users/" + aUsername + "/repos")
+                    .retrieve()
+                    .bodyToFlux(SingleRepository.class).collect(Collectors.toList())
+                    .block(REQUEST_TIMEOUT);
+        } catch (Exception aE){
+            throw new NotFoundLoginException();
+        }
     }
 
     public List<Branch> getRepositoryBranchesWithNameAndCommitSha(SingleRepository aSingleRepository) {
-        List<Branch> branches = localApiClient
+        return localApiClient
                 .get()
                 .uri(aSingleRepository.getUrlToBranches())
                 .retrieve()
                 .bodyToFlux(Branch.class).collect(Collectors.toList())
                 .block(REQUEST_TIMEOUT);
-        return branches;
     }
 }

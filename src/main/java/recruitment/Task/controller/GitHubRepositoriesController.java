@@ -1,7 +1,10 @@
 package recruitment.Task.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RestController;
 import recruitment.Task.model.SingleRepository;
 import recruitment.Task.service.RepositoryService;
 
@@ -16,14 +19,8 @@ public class GitHubRepositoriesController {
         repositoryService = aRepositoryService;
     }
 
-    @RequestMapping(value = "github/repositories/{username}", method = RequestMethod.GET, headers="Accept=application/json")
+    @GetMapping("github/repositories/{username}")
     public List<SingleRepository> getGitHubRepositoriesWithoutForks(@PathVariable("username") String aUsername){
-        List<SingleRepository> repositories = repositoryService.getRepositoriesBasedOnUsername(aUsername);
-        return repositories;
-    }
-
-    @RequestMapping(value = "github/repositories/", method = RequestMethod.GET, headers="Accept=application/json")
-    public String getTest(){
-        return "lol";
+        return repositoryService.getRepositoriesBasedOnUsername(aUsername);
     }
 }
